@@ -1,0 +1,27 @@
+/* fonts FIRST */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* tailwind */
+@import "tailwindcss";
+
+:root {
+  /* colors */
+  --purple-component: 97 26 125;
+  --purple-bg: 20 14 36;
+}
+
+/* global font override */
+html {
+  font-family: "Montserrat", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+}
+
+/* derived color vars (optional, fine where they are) */
+:root {
+  --purple-component-100: rgb(var(--purple-component) / 1);
+  --purple-component-50:  rgb(var(--purple-component) / 0.5);
+  --purple-component-30:  rgb(var(--purple-component) / 0.3);
+
+  --purple-bg-100: rgb(var(--purple-bg) / 1);
+  --purple-bg-50:  rgb(var(--purple-bg) / 0.5);
+  --purple-bg-30:  rgb(var(--purple-bg) / 0.3);
+}
