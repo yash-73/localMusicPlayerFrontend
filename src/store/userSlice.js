@@ -16,6 +16,7 @@ const userSlice = createSlice({
       state.username = action.payload.username;
       state.isAuthenticated = true;
       state.bootStrapped = true;
+      
     },
     clearUser: (state) => {
       state.id = null;

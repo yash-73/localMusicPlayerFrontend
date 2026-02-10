@@ -4,10 +4,12 @@ import { useState } from "react"
 import axios from 'axios';
 import { setUser } from "../store/userSlice";
 import { Link, useNavigate } from "react-router-dom";
+
 const Login = ()=>{
 
 
-    const baseUrl = 'http://localhost:8080'
+    const baseUrl = 'localhost';
+    const port  = '8080';
     const [username , setUsername] = useState('')
     const [password , setPassword] = useState('')
     const [error, setError] = useState('');
@@ -17,30 +19,38 @@ const Login = ()=>{
 
     const dispatch = useDispatch()
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+   const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-        try {
-            const res = await axios.post(
-            `${baseUrl}/auth/login`,
-            { username, password },
-            { withCredentials: true }
-            );
+  try {
+    await axios.post(
+      `http://${baseUrl}:${port}/auth/login`,
+      { username, password },
+      { withCredentials: true }
+    );
 
-            dispatch(setUser({
-            id: res.data.id,
-            username: username,
-            isAuthenticated: true,
-            }));
+    const res = await axios.get(
+      `http://${baseUrl}:${port}/auth/me`,
+      { withCredentials: true }
+    );
 
-            navigate("/");
-        } catch (err) {
-            setError(err.response?.data?.message || "Login failed");
-        } finally {
-            setLoading(false);
-        }
-    };
+    dispatch(setUser({
+      id: res.data.id,
+      username: res.data.username,
+    }));
+
+    navigate('/');
+  } catch (err) {
+    if (err.response) {
+      console.error(err.response.data);
+    } else {
+      console.error(err);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 

@@ -1,7 +1,7 @@
 import { useEffect} from 'react';
 import { Routes , Route} from 'react-router-dom' ;
 import { Provider } from 'react-redux';
-import { store } from './store/store';
+import  store  from './store/store';
 
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -11,6 +11,8 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { clearUser, setUser } from './store/userSlice';
+import { useNavigate } from 'react-router-dom';
+import TracksVirtualized from './components/TracksVirtualized';
 
 
 
@@ -19,33 +21,39 @@ function App() {
 
   const dispatch = useDispatch()
   const bootStrapped = useSelector(state => state.user.bootStrapped);
+  const navigate = useNavigate()
 
-  useEffect(()=>{
-    if(bootStrapped) return;
 
-    axios.get('http://localhost:8080/auth/isLoggedIn' ,{withCredentials: true})
-        .then(res => {
-          if(res.data.id == null){
-            navigate('/login');
-          }
-          dispatch(setUser(
-            {
-              id: res.data.id,
-              username: res.data.username,
-            }
-            
-          ))
+  useEffect(() => {
+    if (bootStrapped) return;
 
-        }).catch(err => {
+    axios.get("http://localhost:8080/auth/me", { withCredentials: true })
+      .then(res => {
+        if (!res.data || !res.data.id) {
           dispatch(clearUser());
-        })
-  },[bootStrapped , dispatch])
+          navigate("/login");
+          return;
+        }
+
+        dispatch(setUser({
+        id: res.data.id,
+        username: res.data.username,
+        }));
+      })
+      .catch(() => {
+        dispatch(clearUser());
+        navigate("/login");
+      })
+
+    }, [bootStrapped, dispatch, navigate]
+  );
+
 
   return (
   
       <Routes>
       <Route element={<ProtectedRoute/>}>
-        <Route path='/' element={<Home/>}/>
+        <Route path='/' element={<TracksVirtualized/>}/>
       </Route>
 
 
@@ -56,4 +64,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

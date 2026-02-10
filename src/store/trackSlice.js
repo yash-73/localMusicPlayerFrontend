@@ -1,6 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit'
 
-const initialState = {
+import { loadTrackState } from '../helpers/trackStorage'
+
+const persisted = loadTrackState();
+
+const initialState = persisted && !persisted.id
+ ?  {
     id: null,
     name: null,
     durationSeconds: 0,
@@ -8,6 +13,15 @@ const initialState = {
     volume: 0.5,
     isPlaying: false,
 }
+: 
+persisted ?? {
+      id: null,
+      name: null,
+      durationSeconds: 0,
+      currentTime: 0,
+      volume: 0.5,
+      isPlaying: false,
+    };
 
 const trackSlice = createSlice({
 
@@ -48,6 +62,10 @@ const trackSlice = createSlice({
             state.isPlaying = action.payload;
         },
 
+        setDuration : (state,action)=>{
+            state.durationSeconds = action.durationSeconds;
+        }
+
     }
 })
 
@@ -58,8 +76,9 @@ export const {
     setCurrentTime,
     setVolume,
     togglePlay,
-    setIsPlaying
+    setIsPlaying,
+    setDuration
 } = trackSlice.actions;
 
-export default trackSlice;
+export default trackSlice.reducer;
 

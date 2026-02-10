@@ -1,12 +1,21 @@
-import {configureStore} from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
 import trackReducer from './trackSlice';
+import { saveTrackState } from '../helpers/trackStorage';
 
-export const store = configureStore(
-    {
-        reducer: {
-            user: userReducer,
-            track: trackReducer
-        }
-    }
-)
+const store = configureStore({
+  reducer: {
+    user: userReducer,
+    track: trackReducer,
+  },
+});
+
+store.subscribe(() => {
+  const { track } = store.getState();
+
+  if (track?.id) {
+    saveTrackState(track);
+  }
+});
+
+export default store;

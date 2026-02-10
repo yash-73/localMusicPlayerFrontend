@@ -3,11 +3,10 @@
     import { useState } from "react"
     import axios from 'axios';
     import {Link} from 'react-router-dom'
-
+    
     const Register = ()=>{
 
-
-        const baseUrl = 'http://localhost:8080'
+       
         const [username , setUsername] = useState('')
         const [password , setPassword] = useState('')
         const [confirmPassword , setConfirmPassword] = useState('')
@@ -23,7 +22,7 @@
                 setError('passwords do not match');
             }
             else{
-                axios.post(`${baseUrl}/auth/register` , 
+                axios.post(`${baseUrl}:${port}/auth/register` , 
                     {
                         username: username,
                         password: password,
