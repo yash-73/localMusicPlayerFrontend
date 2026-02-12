@@ -14,6 +14,7 @@ import { clearUser, setUser } from './store/userSlice';
 import { useNavigate } from 'react-router-dom';
 import TracksVirtualized from './components/TracksVirtualized';
 import AlbumsVirtualized from './components/AlbumsVirtualized';
+import ArtistsVirtualized from './components/ArtistsVirtualized';
 
 
 
@@ -57,6 +58,7 @@ function App() {
         <Route path='/' element={<TracksVirtualized/>}/>
         <Route path='/tracks' element={<TracksVirtualized/>}/>
         <Route path='/albums' element={<AlbumsVirtualized/>}/>
+        <Route path='/artists' element={<ArtistsVirtualized/>}/>
       </Route>
 
 

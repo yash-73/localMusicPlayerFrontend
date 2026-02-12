@@ -54,66 +54,74 @@ const Login = ()=>{
 
 
 
-    const inputClass = 'w-[80%] py-3 px-2 pl-4 my-2 outline-none border-[1px]  border-gray-500 rounded-md focus:bg-[#611a7d] focus:border-white  text-white'  
+    const inputClass = 'w-full py-3 px-4 outline-none border border-gray-200 bg-white text-black placeholder-gray-500 focus:border-red-600 focus:ring-1 focus:ring-red-300 transition-all'  
 
     return (
-
-        <div className="w-full h-[100vh] flex flex-col items-center justify-center bg-[#3b0e5f]">
-        <div className="bg-[#611a7d]/50 sm:w-[500px] max-sm:w-full h-[600px] flex flex-col items-center justify-between rounded-2xl border-[1px] border-purple-400 shadow-purple-800 shadow-sm">
-
-
-            <div className="flex flex-col w-full items-center h-[50%] justify-evenly ">
-                <h2 className="text-3xl font-semibold text-black"> LogIn</h2>
-                <User strokeWidth={"1px"} className="border-[6px] border-black rounded-full h-[150px] w-[150px] "/>
-                             
+        <div className="w-full min-h-screen flex flex-col items-center justify-center bg-white">
+          <div className="sm:w-[480px] max-sm:w-full max-sm:h-screen bg-white border border-gray-200 flex flex-col items-center justify-between sm:p-12 max-sm:p-6 max-sm:rounded-none">
+            <div className="flex flex-col w-full items-center gap-8">
+              <h2 className="text-4xl font-bold text-black text-center">Login</h2>
+              <User strokeWidth={1.5} className="border-2 border-black h-24 w-24 text-black" />
             </div>
 
-            <form className="flex flex-col justify-evenly items-center p-4 w-full" onSubmit={handleSubmit}>
+            <form className="flex flex-col w-full gap-4 mt-8" onSubmit={handleSubmit}>
+              {error.length > 0 && (
+                <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 text-sm">
+                  {error}
+                </div>
+              )}
 
-                {error.length > 0 && <p className="text-red-400 bg-red-400/20 w-[80%] px-2 rounded-sm border-[1px] border-red-500 py-1" >{error}</p>}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-black">Username</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setError('');
+                  }}
+                  className={inputClass}
+                  placeholder="Enter username"
+                  pattern="[a-zA-Z0-9._]{3,20}"
+                  minLength="3"
+                  maxLength="20"
+                  required
+                />
+              </div>
 
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-black">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError('');
+                  }}
+                  className={inputClass}
+                  placeholder="Enter password"
+                  minLength="3"
+                  maxLength="20"
+                  required
+                />
+              </div>
 
-            <input  
-                    type="text" 
-                    value={username} 
-                    onChange={(e)=>{setUsername(e.target.value); setError('')}} 
-                    className={inputClass} 
-                    placeholder="username"
-                    pattern="[a-zA-Z0-9._]{3,20}"
-                    minLength="3"
-                    maxLength="20"
-                    required 
-            />
-
-
-            <input 
-                    type="password"  
-                    value={password} 
-                    onChange={(e)=>{setPassword(e.target.value); setError('')}} 
-                    className={inputClass} 
-                    placeholder="password"
-                    minLength="3"
-                    maxLength="20"
-            />
-
-            <button className="px-10 py-4 rounded-xl text-white font-semibold border-[1px] border-purple-900 hover:bg-purple-300 
-                        duration-300 hover:text-black cursor-pointer  border-2 border-black bg-[#140e24] my-2 "
-
-                        type="submit"
-                        disabled={loading}
-
-                        >
-                        {loading ? `Loading` : `Login`}
-            </button>
-
-            <p>
-                Don't have an account? <Link to={"/register"} className="underline hover:text-purple-800"> register </Link>
-            </p>
-            
-
+              <button
+                className="w-full mt-6 px-6 py-3 bg-black text-white font-semibold border border-black hover:bg-red-700 transition-colors duration-200"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
             </form>
-        </div>
 
+            <p className="text-sm text-gray-700 mt-6 text-center">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-red-600 font-semibold hover:text-red-700 transition-colors">
+                Register
+              </Link>
+            </p>
+          </div>
         </div>
     )
 }
