@@ -43,7 +43,7 @@ const Login = ()=>{
     navigate('/');
   } catch (err) {
     if (err.response) {
-      console.error(err.response.data);
+      console.error(err.response);
     } else {
       console.error(err);
     }

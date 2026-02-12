@@ -52,13 +52,13 @@ export default function TracksInfiniteScroll() {
   }, [loading, lastPage]);
 
   return (
-    <div className="w-full flex flex-col items-center p-4">
+    <div className="w-full flex flex-col items-center p-4 bg-red-400">
 
-      <ul className="bg-purple-900 rounded-xl border-black border-2 flex flex-col md:w-[70%] p-4">
+      <ul className=" rounded-xl border-black border-2 flex flex-col md:w-[70%] p-4">
         {tracks.map(track => (
           <li
             key={track.id}
-            className="flex justify-between p-2 my-3 py-4 rounded-xl border-2 border-black hover:bg-black/10 cursor-pointer"
+            className="flex justify-between p-2 my-3 py-4 rounded-xl border-2 border-black hover:bg-red cursor-pointer"
           >
             <div className="flex items-center">
               <Play

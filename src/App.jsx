@@ -13,6 +13,7 @@ import axios from 'axios';
 import { clearUser, setUser } from './store/userSlice';
 import { useNavigate } from 'react-router-dom';
 import TracksVirtualized from './components/TracksVirtualized';
+import AlbumsVirtualized from './components/AlbumsVirtualized';
 
 
 
@@ -54,6 +55,8 @@ function App() {
       <Routes>
       <Route element={<ProtectedRoute/>}>
         <Route path='/' element={<TracksVirtualized/>}/>
+        <Route path='/tracks' element={<TracksVirtualized/>}/>
+        <Route path='/albums' element={<AlbumsVirtualized/>}/>
       </Route>
 
 

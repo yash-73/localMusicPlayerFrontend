@@ -1,19 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { FixedSizeList as List } from "react-window";
 import axios from "axios";
-import { Play } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { setTrack } from "../store/trackSlice";
+import { Music } from "lucide-react";
 import '../index.css'
 
 const baseUrl = "http://localhost:8080";
 const PAGE_SIZE = 20;
 const ROW_HEIGHT = 72;
 
-export default function TracksVirtualized() {
-  const dispatch = useDispatch();
-
-  const [tracks, setTracks] = useState([]);
+export default function AlbumsVirtualized() {
+  const [albums, setAlbums] = useState([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -23,7 +19,7 @@ export default function TracksVirtualized() {
 
     setLoading(true);
 
-    const res = await axios.get(`${baseUrl}/tracks/get/tracks`, {
+    const res = await axios.get(`${baseUrl}/albums/get/albums`, {
       params: {
         pageNumber: page,
         pageSize: PAGE_SIZE,
@@ -33,7 +29,7 @@ export default function TracksVirtualized() {
       withCredentials: true,
     });
 
-    setTracks(prev => [...prev, ...res.data.content]);
+    setAlbums(prev => [...prev, ...res.data.content]);
     setHasMore(!res.data.lastPage);
     setPage(p => p + 1);
 
@@ -45,38 +41,29 @@ export default function TracksVirtualized() {
   },[])
 
   const Row = ({ index, style }) => {
-    const track = tracks[index];
+    const album = albums[index];
 
-    if (!track) return <div style={style}></div>;
+    if (!album) return <div style={style}></div>;
 
     return (
       <div  
-        onClick={()=>{dispatch(setTrack({
-          id: track.id ,
-          name: track.name,
-          durationSeconds: track.durationSeconds}))
-        }}
         style={style} 
         className="flex p-3 flex-row w-full justify-between items-center px-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors duration-150 group"
       >
         <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
-          <Play 
+          <Music 
             strokeWidth={1.5}  
-            fill="true" 
             className="text-gray-700 group-hover:text-red-600 transition-colors flex-shrink-0" 
             size={28} 
           />
           <div className="min-w-0 flex-1">
             <div className="font-medium text-black truncate text-sm group-hover:text-red-600 transition-colors">
-              {track.name}
+              {album.name}
             </div>
             <div className="text-xs text-gray-600 truncate group-hover:text-gray-700 transition-colors">
-              {track.artists.map(a => a.name).join(", ")}
+              {album.primaryArtistName}
             </div>
           </div>
-        </div>
-        <div className="text-xs font-medium text-gray-600 group-hover:text-red-600 transition-colors flex-shrink-0 ml-4">
-          {Math.floor(track.durationSeconds / 60)}:{String(track.durationSeconds % 60).padStart(2, '0')}
         </div>
       </div>
     );
@@ -88,10 +75,10 @@ export default function TracksVirtualized() {
         className="track-scroll"
         height={600}
         width="100%"
-        itemCount={tracks.length}
+        itemCount={albums.length}
         itemSize={ROW_HEIGHT}
         onItemsRendered={({ visibleStopIndex }) => {
-          if (visibleStopIndex >= tracks.length - 5 && hasMore && !loading) {
+          if (visibleStopIndex >= albums.length - 5 && hasMore && !loading) {
             fetchPage();
           }
         }}
