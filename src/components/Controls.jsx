@@ -1,22 +1,25 @@
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setCurrentTime,
-  setVolume,
-  setDuration
-} from "../store/trackSlice";
+import { setCurrentTime, setVolume, setDuration, setId } from "../store/trackSlice";
+import { addTrack, skipBackward } from "../store/lastPlayedSlice";
 import { useRef, useEffect, useState } from "react";
-import { fetchTrack } from "../services/api";
-import { Play, SkipBack, SkipForward, Pause } from "lucide-react";
+import { fetchTrack, fetchTotalTracksCount } from "../services/api";
+import { Play, SkipBack, SkipForward, Pause, Repeat, Shuffle } from "lucide-react";
 
 const Controls = ({ className }) => {
   const dispatch = useDispatch();
+
   const audioRef = useRef(null);
+  const skipBackwardCalledRef = useRef(false);
 
   const { id, currentTime, volume } = useSelector(state => state.track);
+  const lastPlayedHistory = useSelector(state => state.lastPlayed.history);
 
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [previousTrack, setPreviousTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const [isLooping, setIsLooping] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [totalTracks, setTotalTracks] = useState(0);
 
   const duration =
     audioRef.current?.duration ?? currentTrack?.durationSeconds ?? 0;
@@ -40,6 +43,52 @@ const Controls = ({ className }) => {
     dispatch(setVolume(Number(e.target.value) / 100));
   };
 
+  const loadTotalTracksCount = async () => {
+    try {
+      const count = await fetchTotalTracksCount();
+      setTotalTracks(count);
+    } catch (e) {
+      console.dir(e);
+    }
+  };
+
+  const getNextTrackId = () => {
+    if (isLooping) {
+      return id; // Restart the same track
+    } else if (isShuffling) {
+      // Play a random valid trackId
+      return Math.floor(Math.random() * totalTracks) + 1;
+    } else {
+      // Play next track (increment trackId)
+      return id + 1 <= totalTracks ? id + 1 : 1; // Loop back to first track if at the end
+    }
+  };
+
+  const handleSkipForward = () => {
+    // Add current track to lastPlayed before skipping
+    if (currentTrack) {
+      dispatch(addTrack(currentTrack));
+    }
+    const nextTrackId = getNextTrackId();
+    dispatch(setId(nextTrackId));
+  };
+
+  const handleSkipBackward = () => {
+    // Get the last track from history
+    if (lastPlayedHistory.length === 0) return;
+
+    // Set flag to prevent adding this track back to lastPlayed
+    skipBackwardCalledRef.current = true;
+
+    const previousTrack = lastPlayedHistory[lastPlayedHistory.length - 1];
+    
+    // Play the previous track
+    dispatch(setId(previousTrack.id));
+    
+    // Remove it from lastPlayed history
+    dispatch(skipBackward());
+  };
+
   useEffect(() => {
     if (!id) return;
 
@@ -48,7 +97,18 @@ const Controls = ({ className }) => {
     (async () => {
       try {
         const track = await fetchTrack(id);
-        if (!cancelled) setCurrentTrack(track);
+        if (!cancelled) {
+          // Add the previous track to lastPlayed when track changes
+          // But NOT if this change came from skipBackward
+          if (previousTrack && !skipBackwardCalledRef.current) {
+            dispatch(addTrack(previousTrack));
+          }
+          // Reset the flag after use
+          skipBackwardCalledRef.current = false;
+          
+          setCurrentTrack(track);
+          setPreviousTrack(track);
+        }
       } catch (e) {
         console.dir(e);
       }
@@ -65,6 +125,7 @@ const Controls = ({ className }) => {
 
     audio.currentTime = currentTime;
   }, [currentTrack?.id]);
+
 
   useEffect(() => {
     if (!currentTrack?.id || !audioRef.current) return;
@@ -100,15 +161,21 @@ const Controls = ({ className }) => {
 
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
+    const onEnded = () => {
+      const nextTrackId = getNextTrackId();
+      dispatch(setId(nextTrackId));
+    };
 
     audio.addEventListener("play", onPlay);
     audio.addEventListener("pause", onPause);
+    audio.addEventListener("ended", onEnded);
 
     return () => {
       audio.removeEventListener("play", onPlay);
       audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("ended", onEnded);
     };
-  }, []);
+  }, [isLooping, isShuffling, id, totalTracks, dispatch]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -130,6 +197,10 @@ const Controls = ({ className }) => {
     }
   }, [volume]);
 
+  useEffect(() => {
+    loadTotalTracksCount();
+  }, []);
+
   return (
     <div className={`w-full flex justify-between items-center bg-white border-t border-gray-200 p-4 gap-6 ${className}`}>
       <audio ref={audioRef} preload="metadata" crossOrigin="use-credentials" />
@@ -148,7 +219,20 @@ const Controls = ({ className }) => {
 
       <div className="controls flex flex-col items-center flex-1 gap-3">
         <div className="flex items-center justify-center gap-6">
-          <button className="p-1.5 hover:bg-gray-100 transition-colors text-gray-700 hover:text-red-600">
+          <button 
+            onClick={() => {
+              setIsLooping(!isLooping);
+              if (!isLooping && isShuffling) {
+                setIsShuffling(false);
+              }
+            }}
+            className={`p-1.5 transition-colors ${isLooping ? 'bg-red-100 text-red-600' : 'hover:bg-gray-100 text-gray-700'}`}
+            title="Loop"
+          >
+            <Repeat size={24} />
+          </button>
+
+          <button onClick={handleSkipBackward} className="p-1.5 hover:bg-gray-100 transition-colors text-gray-700 hover:text-red-600">
             <SkipBack size={24} />
           </button>
           
@@ -170,8 +254,21 @@ const Controls = ({ className }) => {
             </button>
           )}
 
-          <button className="p-1.5 hover:bg-gray-100 transition-colors text-gray-700 hover:text-red-600">
+          <button onClick={handleSkipForward} className="p-1.5 hover:bg-gray-100 transition-colors text-gray-700 hover:text-red-600">
             <SkipForward size={24} />
+          </button>
+
+          <button 
+            onClick={() => {
+              setIsShuffling(!isShuffling);
+              if (!isShuffling && isLooping) {
+                setIsLooping(false);
+              }
+            }}
+            className={`p-1.5 transition-colors ${isShuffling ? 'bg-red-100 text-red-600' : 'hover:bg-gray-100 text-gray-700'}`}
+            title="Shuffle"
+          >
+            <Shuffle size={24} />
           </button>
         </div>
 

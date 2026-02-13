@@ -14,5 +14,18 @@ export const fetchTrack = async (trackId) => {
   }
 };
 
+export const fetchTotalTracksCount = async () => {
+  try {
+    const res = await axios.get(
+      `http://localhost:8080/tracks/get/tracks?pageNumber=0&pageSize=1`,
+      { withCredentials: true }
+    );
+    return res.data.totalElements || 0;
+  } catch (err) {
+    console.dir(err.response?.data);
+    throw err;
+  }
+};
+
 
 

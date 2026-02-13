@@ -12,6 +12,8 @@ const initialState = persisted && !persisted.id
     currentTime: 0,
     volume: 0.5,
     isPlaying: false,
+    albumName: null,
+    artists: []
 }
 : 
 persisted ?? {
@@ -21,6 +23,8 @@ persisted ?? {
       currentTime: 0,
       volume: 0.5,
       isPlaying: false,
+      albumName: null,
+      artists: []
     };
 
 const trackSlice = createSlice({
@@ -36,6 +40,12 @@ const trackSlice = createSlice({
             state.durationSeconds == action.payload.durationSeconds,
             state.currentTime = 0,
             state.isPlaying = true
+            state.albumName = action.payload.albumName,
+            state.artists = action.payload.artists
+        },
+
+        setId: (state, action) => {
+            state.id = action.payload;
         },
 
         clearTrack: (state, action)=>{
@@ -43,7 +53,10 @@ const trackSlice = createSlice({
             state.name = null,
             state.durationSeconds = 0,
             state.currentTime = 0,
-            state.isPlaying = false
+            state.isPlaying = false,
+            state.albumName = null,
+            state.artists = []
+            
         },
         
         setCurrentTime: (state, action) => {
@@ -72,6 +85,7 @@ const trackSlice = createSlice({
 
 export const {
     setTrack ,
+    setId,
     clearTrack,
     setCurrentTime,
     setVolume,
