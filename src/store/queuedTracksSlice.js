@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const queuedTracksSlice = createSlice({
   name: "queuedTracks",
   initialState: {
-    queue: []
+    queue: [],
   },
   reducers: {
     addTrack(state, action) {

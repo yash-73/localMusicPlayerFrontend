@@ -27,10 +27,17 @@ export default function TracksVirtualized() {
 
 
   const handleTrackQueueing = ( id, name, artists , indexNum ) => {
-      dispatch(addTrack({id: id , name: name , artists: artists}));
+      dispatch(addTrack({id: id , name: name , artists: artists , time: Date.now()}));
       setAlertMessage('Track added to queue');
       setAlertIndex(indexNum)
       setAlert(true);
+  }
+
+  const handlePlayNext = (id , name ,artists , indexNum) =>{
+    dispatch(addTrackToFront({id: id , name: name , artists: artists , time: Date.now()}));
+    setAlertMessage('Track added to queue');
+    setAlertIndex(indexNum);
+    setAlert(true);
   }
 
   const fetchPage = useCallback(async () => {
@@ -142,7 +149,7 @@ export default function TracksVirtualized() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    // TODO: Implement play next
+                    handlePlayNext(track.id , track.name , track.artists , index);
                     setOpenMenuIndex(null);
                   }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"

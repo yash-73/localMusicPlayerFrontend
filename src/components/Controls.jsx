@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentTime, setVolume, setDuration, setId } from "../store/trackSlice";
+import { setCurrentTime, setVolume, setDuration, setId, setTrack } from "../store/trackSlice";
 import { addTrack, skipBackward } from "../store/lastPlayedSlice";
+import { removeFirstTrack } from "../store/queuedTracksSlice";
 import { useRef, useEffect, useState } from "react";
 import { fetchTrack, fetchTotalTracksCount } from "../services/api";
 import { Play, SkipBack, SkipForward, Pause, Repeat, Shuffle } from "lucide-react";
@@ -13,6 +14,8 @@ const Controls = ({ className }) => {
 
   const { id, currentTime, volume } = useSelector(state => state.track);
   const lastPlayedHistory = useSelector(state => state.lastPlayed.history);
+
+  const queuedTracks = useSelector(state=>state.queuedTracks.queue);
 
   const [currentTrack, setCurrentTrack] = useState(null);
   const [previousTrack, setPreviousTrack] = useState(null);
@@ -58,9 +61,13 @@ const Controls = ({ className }) => {
     } else if (isShuffling) {
       // Play a random valid trackId
       return Math.floor(Math.random() * totalTracks) + 1;
+    } else if (queuedTracks.length > 0) {
+      // Get next track from queue
+      const nextTrack = queuedTracks[0];
+      dispatch(removeFirstTrack());
+      return nextTrack.id;
     } else {
-      // Play next track (increment trackId)
-      return id + 1 <= totalTracks ? id + 1 : 1; // Loop back to first track if at the end
+      return id + 1 <= totalTracks ? id + 1 : 1;
     }
   };
 
@@ -69,8 +76,33 @@ const Controls = ({ className }) => {
     if (currentTrack) {
       dispatch(addTrack(currentTrack));
     }
-    const nextTrackId = getNextTrackId();
-    dispatch(setId(nextTrackId));
+
+    let nextId;
+
+    if (isLooping) {
+      // Stay on same track
+      nextId = id;
+    } else if (isShuffling) {
+      // Play a random track
+      nextId = Math.floor(Math.random() * totalTracks) + 1;
+    } else if (queuedTracks.length > 0) {
+      // Get next track from queue
+      const nextTrack = queuedTracks[0];
+      nextId = nextTrack.id;
+      dispatch(removeFirstTrack());
+      dispatch(setTrack({
+            id: nextTrack.id,
+            name: nextTrack.name,
+            durationSeconds: nextTrack.durationSeconds,
+            albumName: nextTrack.albumName,
+            artists: nextTrack.artists
+          }))
+    } else {
+      // Increment trackId, loop back to 1 if at the end
+      nextId = id + 1 <= totalTracks ? id + 1 : 1;
+    }
+
+    dispatch(setId(nextId));
   };
 
   const handleSkipBackward = () => {
@@ -81,8 +113,18 @@ const Controls = ({ className }) => {
     skipBackwardCalledRef.current = true;
 
     const previousTrack = lastPlayedHistory[lastPlayedHistory.length - 1];
+
     
     // Play the previous track
+    dispatch(setTrack(
+      {
+            id: previousTrack.id,
+            name: previousTrack.name,
+            durationSeconds: previousTrack.durationSeconds,
+            albumName: previousTrack.albumName,
+            artists: previousTrack.artists
+      }
+    ))
     dispatch(setId(previousTrack.id));
     
     // Remove it from lastPlayed history
@@ -107,6 +149,13 @@ const Controls = ({ className }) => {
           skipBackwardCalledRef.current = false;
           
           setCurrentTrack(track);
+          dispatch(setTrack({
+            id: track.id,
+            name: track.name,
+            durationSeconds: track.durationSeconds,
+            albumName: track.albumName,
+            artists: track.artists
+          }))
           setPreviousTrack(track);
         }
       } catch (e) {
