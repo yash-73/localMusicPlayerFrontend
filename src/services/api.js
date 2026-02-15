@@ -27,5 +27,18 @@ export const fetchTotalTracksCount = async () => {
   }
 };
 
+export const searchTracksByName = async (query) => {
+  try {
+      const result  = await axios.get(`http://localhost:8080/tracks/search?keyword=${query}` ,
+          {withCredentials: true}  
+      );
+      return result.data;
+  }
+  catch(err) {
+    console.dir(err.response?.data);
+    throw err;
+  }
+}
+
 
 

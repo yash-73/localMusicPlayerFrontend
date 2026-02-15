@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const ViewToggle = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeView, setActiveView] = useState("tracks");
+  const [activeView, setActiveView] = useState("");
 
   const views = [
     { id: "tracks", label: "Tracks", path: "/tracks" },
@@ -14,7 +14,7 @@ const ViewToggle = () => {
 
   useEffect(() => {
     // Determine active view based on current path
-    if (location.pathname === "/" || location.pathname === "/tracks") {
+    if (location.pathname === "/tracks") {
       setActiveView("tracks");
     } else if (location.pathname === "/artists") {
       setActiveView("artists");

@@ -39,7 +39,7 @@ const trackSlice = createSlice({
             state.name = action.payload.name,
             state.durationSeconds == action.payload.durationSeconds,
             state.currentTime = 0,
-            state.isPlaying = true
+            state.isPlaying = true;
             state.albumName = action.payload.albumName,
             state.artists = action.payload.artists
         },

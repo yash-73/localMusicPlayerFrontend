@@ -13,12 +13,15 @@ const Controls = ({ className }) => {
   const skipBackwardCalledRef = useRef(false);
 
   const { id, currentTime, volume } = useSelector(state => state.track);
+  
   const lastPlayedHistory = useSelector(state => state.lastPlayed.history);
 
   const queuedTracks = useSelector(state=>state.queuedTracks.queue);
 
   const [currentTrack, setCurrentTrack] = useState(null);
   const [previousTrack, setPreviousTrack] = useState(null);
+  const [isTrackFromLocalStorage, setIsTrackFromLocalStorage] = useState(false);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -32,7 +35,6 @@ const Controls = ({ className }) => {
   const handlePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     audio.paused ? audio.play() : audio.pause();
   };
 
@@ -55,21 +57,6 @@ const Controls = ({ className }) => {
     }
   };
 
-  const getNextTrackId = () => {
-    if (isLooping) {
-      return id; // Restart the same track
-    } else if (isShuffling) {
-      // Play a random valid trackId
-      return Math.floor(Math.random() * totalTracks) + 1;
-    } else if (queuedTracks.length > 0) {
-      // Get next track from queue
-      const nextTrack = queuedTracks[0];
-      dispatch(removeFirstTrack());
-      return nextTrack.id;
-    } else {
-      return id + 1 <= totalTracks ? id + 1 : 1;
-    }
-  };
 
   const handleSkipForward = () => {
     // Add current track to lastPlayed before skipping
@@ -90,13 +77,6 @@ const Controls = ({ className }) => {
       const nextTrack = queuedTracks[0];
       nextId = nextTrack.id;
       dispatch(removeFirstTrack());
-      dispatch(setTrack({
-            id: nextTrack.id,
-            name: nextTrack.name,
-            durationSeconds: nextTrack.durationSeconds,
-            albumName: nextTrack.albumName,
-            artists: nextTrack.artists
-          }))
     } else {
       // Increment trackId, loop back to 1 if at the end
       nextId = id + 1 <= totalTracks ? id + 1 : 1;
@@ -114,17 +94,7 @@ const Controls = ({ className }) => {
 
     const previousTrack = lastPlayedHistory[lastPlayedHistory.length - 1];
 
-    
     // Play the previous track
-    dispatch(setTrack(
-      {
-            id: previousTrack.id,
-            name: previousTrack.name,
-            durationSeconds: previousTrack.durationSeconds,
-            albumName: previousTrack.albumName,
-            artists: previousTrack.artists
-      }
-    ))
     dispatch(setId(previousTrack.id));
     
     // Remove it from lastPlayed history
@@ -140,6 +110,10 @@ const Controls = ({ className }) => {
       try {
         const track = await fetchTrack(id);
         if (!cancelled) {
+          // Check if this track was loaded from localStorage on initial load
+          const isFromStorage = !previousTrack;
+          setIsTrackFromLocalStorage(isFromStorage);
+
           // Add the previous track to lastPlayed when track changes
           // But NOT if this change came from skipBackward
           if (previousTrack && !skipBackwardCalledRef.current) {
@@ -156,6 +130,7 @@ const Controls = ({ className }) => {
             albumName: track.albumName,
             artists: track.artists
           }))
+
           setPreviousTrack(track);
         }
       } catch (e) {
@@ -182,10 +157,16 @@ const Controls = ({ className }) => {
     const audio = audioRef.current;
     audio.src = `http://localhost:8080/tracks/stream/${currentTrack.id}`;
     audio.load();
-    audio.play().catch(() => { });
-  }, [currentTrack?.id]);
 
-  useEffect(() => {
+    // Auto-play only if track was NOT loaded from localStorage
+    if (!isTrackFromLocalStorage) {
+      audio.play().catch(() => { });
+    }
+  }, [currentTrack?.id, isTrackFromLocalStorage]);
+
+  
+
+    useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -203,6 +184,8 @@ const Controls = ({ className }) => {
       audio.removeEventListener("loadedmetadata", onLoadedMetadata);
     };
   }, []);
+
+
 
   useEffect(() => {
     const audio = audioRef.current;

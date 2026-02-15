@@ -55,7 +55,7 @@ function App() {
   
       <Routes>
       <Route element={<ProtectedRoute/>}>
-        <Route path='/' element={<TracksVirtualized/>}/>
+        <Route path='/' element={<Home/>}/>
         <Route path='/tracks' element={<TracksVirtualized/>}/>
         <Route path='/albums' element={<AlbumsVirtualized/>}/>
         <Route path='/artists' element={<ArtistsVirtualized/>}/>
