@@ -1,6 +1,5 @@
 import { useSelector , useDispatch } from "react-redux";
-import {addTrack, addTrackToFront, 
-  removeFirstTrack, removeTrackById, clearQueue} from '../store/queuedTracksSlice'
+import {removeTrackById, clearQueue} from '../store/queuedTracksSlice'
 import { useState } from "react";
 import { MoreVertical } from "lucide-react";
  

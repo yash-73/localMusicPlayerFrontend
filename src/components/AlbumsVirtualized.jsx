@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { FixedSizeList as List } from "react-window";
 import axios from "axios";
 import { Music } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import '../index.css'
 
 const baseUrl = "http://localhost:8080";
@@ -13,6 +14,7 @@ export default function AlbumsVirtualized() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchPage = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -47,15 +49,20 @@ export default function AlbumsVirtualized() {
 
     return (
       <div  
-        style={style} 
+        style={style}
+        onClick={() => navigate(`/album/${album.id}`)}
         className="flex p-3 flex-row w-full justify-between items-center px-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors duration-150 group"
       >
         <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
-          <Music 
+          {
+            album.albumArtUrl ?  (
+             <img className="h-[40px] w-[40px] rounded-[4px]" src={`${baseUrl}/album_art/${album.albumArtUrl}`} />
+            ) : <Music 
             strokeWidth={1.5}  
             className="text-gray-700 group-hover:text-red-600 transition-colors flex-shrink-0" 
             size={28} 
           />
+          }
           <div className="min-w-0 flex-1">
             <div className="font-medium text-black truncate text-sm group-hover:text-red-600 transition-colors">
               {album.name}

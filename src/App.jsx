@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import TracksVirtualized from './components/TracksVirtualized';
 import AlbumsVirtualized from './components/AlbumsVirtualized';
 import ArtistsVirtualized from './components/ArtistsVirtualized';
+import AlbumDisplay from './components/AlbumDisplay';
 
 
 
@@ -59,6 +60,7 @@ function App() {
         <Route path='/tracks' element={<TracksVirtualized/>}/>
         <Route path='/albums' element={<AlbumsVirtualized/>}/>
         <Route path='/artists' element={<ArtistsVirtualized/>}/>
+        <Route path='/album/:id' element={<AlbumDisplay/>}/>
       </Route>
 
 
