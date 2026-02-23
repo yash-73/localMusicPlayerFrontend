@@ -40,5 +40,44 @@ export const searchTracksByName = async (query) => {
   }
 }
 
+export const searchTracks = async (query) => {
+  try {
+    const result = await axios.get(
+      `http://localhost:8080/tracks/search?keyword=${query}`,
+      { withCredentials: true }
+    );
+    return result.data;
+  } catch (err) {
+    console.dir(err.response?.data);
+    throw err;
+  }
+};
+
+export const searchAlbums = async (query) => {
+  try {
+    const result = await axios.get(
+      `http://localhost:8080/albums/search?keyword=${query}`,
+      { withCredentials: true }
+    );
+    return result.data;
+  } catch (err) {
+    console.dir(err.response?.data);
+    throw err;
+  }
+};
+
+export const searchArtists = async (query) => {
+  try {
+    const result = await axios.get(
+      `http://localhost:8080/artists/search?keyword=${query}`,
+      { withCredentials: true }
+    );
+    return result.data;
+  } catch (err) {
+    console.dir(err.response?.data);
+    throw err;
+  }
+};
+
 
 

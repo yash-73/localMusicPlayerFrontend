@@ -1,9 +1,25 @@
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { searchTracks, searchAlbums, searchArtists } from "../services/api";
 
 const SearchBox = ({className})=>{
 
     const [query , setQuery] = useState('');
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!query.trim()) return;
+        
+        navigate(`/search?q=${encodeURIComponent(query)}`);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSubmit(e);
+        }
+    };
 
     return(
         <div className={`${className} w-full bg-white border-b border-gray-200 p-4 flex flex-row items-center gap-3 shadow-sm`}>
@@ -14,6 +30,7 @@ const SearchBox = ({className})=>{
                 placeholder="Search songs, artists, albums" 
                 value={query}
                 onChange={(e)=>{setQuery(e.target.value)}}
+                onKeyPress={handleKeyPress}
             />
         </div>
     )

@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { FixedSizeList as List } from "react-window";
 import axios from "axios";
-import { Play, MoreVertical } from "lucide-react";
+import { Play } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setTrack } from "../store/trackSlice";
 import { addTrack, addTrackToFront } from "../store/queuedTracksSlice";
+import TrackMenu from "./TrackMenu";
 import '../index.css'
 
 const baseUrl = "http://localhost:8080";
@@ -132,58 +133,23 @@ export default function TracksVirtualized() {
           <div className="text-xs font-medium text-gray-600 group-hover:text-red-600 transition-colors">
             {Math.floor(track.durationSeconds / 60)}:{String(track.durationSeconds % 60).padStart(2, '0')}
           </div>
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenMenuIndex(openMenuIndex === index ? null : index);
-              }}
-              className="p-1.5 hover:bg-gray-200 rounded transition-colors text-gray-600 hover:text-red-600"
-              title="More options"
-            >
-              <MoreVertical size={18} />
-            </button>
-            
-            {openMenuIndex === index && (
-              <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlayNext(track.id , track.name , track.artists , index);
-                    setOpenMenuIndex(null);
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
-                >
-                  Play Next
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTrackQueueing(track.id , track.name , track.artists , index);
-                    setOpenMenuIndex(null);
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors border-t border-gray-200"
-                >
-                  Add to Queue
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // TODO: Implement add to playlist
-                    setOpenMenuIndex(null);
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors border-t border-gray-200"
-                >
-                  Add to Playlist
-                </button>
-              </div>
-            )}
-            {(alertIndex && alertIndex == index) && (alert) && (
-              <div className="absolute right-0 mt-1 shadow-lg text-red-500 p-4 z-50 w-[200px]  text-sm bg-red-50 border-red-500 border">
-                  {alertMessage}
-              </div>
-            ) }
-          </div>
+          <TrackMenu
+            track={track}
+            index={index}
+            isOpen={openMenuIndex === index}
+            onToggle={(idx) => setOpenMenuIndex(openMenuIndex === idx ? null : idx)}
+            onPlayNext={(id, name, artists, idx) => {
+              handlePlayNext(id, name, artists, idx);
+              setOpenMenuIndex(null);
+            }}
+            onAddToQueue={(id, name, artists, idx) => {
+              handleTrackQueueing(id, name, artists, idx);
+              setOpenMenuIndex(null);
+            }}
+            onAddToPlaylist={() => setOpenMenuIndex(null)}
+            showAlert={alertIndex === index && alert}
+            alertMessage={alertMessage}
+          />
         </div>
       </div>
     );

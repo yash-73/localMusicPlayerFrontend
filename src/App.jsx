@@ -16,6 +16,7 @@ import TracksVirtualized from './components/TracksVirtualized';
 import AlbumsVirtualized from './components/AlbumsVirtualized';
 import ArtistsVirtualized from './components/ArtistsVirtualized';
 import AlbumDisplay from './components/AlbumDisplay';
+import SearchResults from './components/SearchResults';
 
 
 
@@ -61,6 +62,7 @@ function App() {
         <Route path='/albums' element={<AlbumsVirtualized/>}/>
         <Route path='/artists' element={<ArtistsVirtualized/>}/>
         <Route path='/album/:id' element={<AlbumDisplay/>}/>
+        <Route path='/search' element={<SearchResults/>}/>
       </Route>
 
 
