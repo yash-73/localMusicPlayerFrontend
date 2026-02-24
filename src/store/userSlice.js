@@ -4,7 +4,8 @@ const initialState = {
   id: null,
   username: null,
   isAuthenticated: false,
-  bootStrapped: false
+  bootStrapped: false,
+  darkMode: false
 };
 
 const userSlice = createSlice({
@@ -24,8 +25,13 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.bootStrapped = true;
     },
+
+    toggleDarkMode: (state) => {
+      state.darkMode = !state.darkMode;
+    }
+
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, clearUser, toggleDarkMode } = userSlice.actions;
 export default userSlice.reducer;

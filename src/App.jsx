@@ -6,17 +6,18 @@ import  store  from './store/store';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './pages/ProtectedRoute';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { clearUser, setUser } from './store/userSlice';
 import { useNavigate } from 'react-router-dom';
-import TracksVirtualized from './components/TracksVirtualized';
-import AlbumsVirtualized from './components/AlbumsVirtualized';
-import ArtistsVirtualized from './components/ArtistsVirtualized';
-import AlbumDisplay from './components/AlbumDisplay';
+import TracksVirtualized from './components/track/TracksVirtualized';
+import AlbumsVirtualized from './components/album/AlbumsVirtualized';
+import ArtistsVirtualized from './components/artist/ArtistsVirtualized';
+import AlbumDisplay from './components/album/AlbumDisplay';
 import SearchResults from './components/SearchResults';
+import ArtistDisplay from './components/artist/ArtistDisplay';
 
 
 
@@ -60,11 +61,11 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='/tracks' element={<TracksVirtualized/>}/>
         <Route path='/albums' element={<AlbumsVirtualized/>}/>
-        <Route path='/artists' element={<ArtistsVirtualized/>}/>
         <Route path='/album/:id' element={<AlbumDisplay/>}/>
+        <Route path='/artists' element={<ArtistsVirtualized/>}/>
+        <Route path='/artist/:id' element={<ArtistDisplay/>}/>
         <Route path='/search' element={<SearchResults/>}/>
       </Route>
-
 
       <Route path='/register' element={<Register/>}/>
       <Route path='/login' element={<Login/>}/>

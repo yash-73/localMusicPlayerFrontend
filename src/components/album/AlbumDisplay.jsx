@@ -4,9 +4,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Play, Music } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { setTrack } from "../store/trackSlice";
-import { addTrack, addTrackToFront } from "../store/queuedTracksSlice";
-import TrackMenu from "./TrackMenu";
+import { setTrack } from "../../store/trackSlice";
+import { addTrack, addTrackToFront } from "../../store/queuedTracksSlice";
+import TrackMenu from "../track/TrackMenu";
 
 const baseUrl = "http://localhost:8080";
 

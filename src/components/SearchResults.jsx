@@ -1,16 +1,17 @@
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { searchTracks, searchAlbums, searchArtists } from "../services/api";
 import { Loader, Play } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setTrack } from "../store/trackSlice";
 import { addTrack, addTrackToFront } from "../store/queuedTracksSlice";
-import TrackMenu from "./TrackMenu";
+import TrackMenu from "./track/TrackMenu";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const menuRef = useRef(null);
 
   const baseUrl = 'http://localhost:8080'
@@ -176,7 +177,6 @@ const SearchResults = () => {
                           {track.albumName}
                           {track.artists && track.artists.length > 0 && (
                             <span>
-                              {" • "}
                               {track.artists.map((a) => a.name).join(", ")}
                             </span>
                           )}
@@ -219,6 +219,7 @@ const SearchResults = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {albums.map((album) => (
                   <div
+                  onClick={() => navigate(`/album/${album.id}`)}
                     key={album.id}
                     className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:shadow-md transition-all cursor-pointer group flex flex-col"
                   >
@@ -248,7 +249,9 @@ const SearchResults = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {artists.map((artist) => (
                   <div
+                    
                     key={artist.id}
+                    onClick={() => navigate(`/artist/${artist.id}`)}
                     className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:shadow-md transition-all cursor-pointer text-center group"
                   >
                     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-red-400 to-red-600 mx-auto mb-3 flex items-center justify-center group-hover:shadow-lg group-hover:scale-105 transition-all">

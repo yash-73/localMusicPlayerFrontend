@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
-import Controls from "./Controls";
-import SearchBox from "./SearchBox";
-import PlaylistsSidebar from "./PlaylistsSidebar";
-import QueueSidebar from "./QueueSidebar";
-import ViewToggle from "./ViewToggle";
+import Controls from "../components/Controls";
+import SearchBox from "../components/SearchBox";
+import PlaylistsSidebar from "../components/PlaylistsSidebar";
+import QueueSidebar from "../components/QueueSidebar";
+import ViewToggle from "../components/ViewToggle";
+import ThemeToggle from "../components/ThemeToggle";
 
 const ProtectedRoute = () => {
   
@@ -23,8 +24,10 @@ const ProtectedRoute = () => {
   return (
     <div className="flex flex-col w-full h-screen bg-white">
       {/* Top: Search Bar */}
+      <div className="flex flex-row w-full">
       <SearchBox />
-
+      <ThemeToggle/>
+      </div>
       {/* Middle: 3-Column Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Playlists */}

@@ -3,10 +3,11 @@ import { FixedSizeList as List } from "react-window";
 import axios from "axios";
 import { Play } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { setTrack } from "../store/trackSlice";
-import { addTrack, addTrackToFront } from "../store/queuedTracksSlice";
+import { setTrack } from "../../store/trackSlice";
+import { addTrack, addTrackToFront } from "../../store/queuedTracksSlice";
 import TrackMenu from "./TrackMenu";
-import '../index.css'
+import '../../index.css'
+import { useSelector } from "react-redux";
 
 const baseUrl = "http://localhost:8080";
 const PAGE_SIZE = 20;
@@ -25,6 +26,8 @@ export default function TracksVirtualized() {
   const [alert , setAlert] = useState(false)
   const [alertMessage , setAlertMessage] = useState('');
   const [alertIndex , setAlertIndex] = useState(null);
+
+  const darkMode  = useSelector(state=> state.user.darkMode);
 
 
   const handleTrackQueueing = ( id, name, artists , indexNum ) => {
@@ -110,27 +113,27 @@ export default function TracksVirtualized() {
           }))
         }}
         style={style}
-        className="flex p-3 flex-row w-full justify-between items-center px-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors duration-150 group"
+        className={`flex p-3 flex-row w-full justify-between items-center px-4 border-b  ${darkMode ? 'bg-gray-800  hover:bg-gray-900 border-gray-500'  : 'bg-white border-gray-200 hover:bg-gray-50' }   cursor-pointer transition-colors duration-150 group`}
       >
 
         <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
           <Play
             strokeWidth={1.5}
 
-            className="text-gray-700 group-hover:text-red-600 transition-colors flex-shrink-0"
+            className={`${darkMode ? 'text-gray-300' :'text-gray-700'} group-hover:text-red-600 transition-colors flex-shrink-0`}
             size={28}
           />
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-black truncate text-sm group-hover:text-red-600 transition-colors">
+            <div className={`font-medium ${darkMode ? 'text-white' : 'text-black'} truncate text-sm group-hover:text-red-600 transition-colors`}>
               {track.name}
             </div>
-            <div className="text-xs text-gray-600 truncate group-hover:text-gray-700 transition-colors">
+            <div className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600 group-hover:text-gray-700'} truncate  transition-colors`}>
               {track.artists.map(a => a.name).join(", ")}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-          <div className="text-xs font-medium text-gray-600 group-hover:text-red-600 transition-colors">
+          <div className={`text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'} group-hover:text-red-600 transition-colors`}>
             {Math.floor(track.durationSeconds / 60)}:{String(track.durationSeconds % 60).padStart(2, '0')}
           </div>
           <TrackMenu
@@ -158,8 +161,8 @@ export default function TracksVirtualized() {
   return (
     <div className="bg-white border items-center border-gray-200 overflow-hidden flex-1">
       <List
-        className="track-scroll"
-        height={600}
+        className="track-scroll "
+        height={700}
         width="100%"
         itemCount={tracks.length}
         itemSize={ROW_HEIGHT}

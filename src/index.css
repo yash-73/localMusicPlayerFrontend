@@ -36,16 +36,16 @@ html {
 }
 
 .track-scroll::-webkit-scrollbar-thumb {
-  background-color: #991b1b; /* dark red */
+  background-color: #b01b1b; /* dark red */
   border-radius: 0px;
 }
 
 .track-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #7f1d1d;
+  background-color: #ac2323;
 }
 
 .track-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #991b1b #f5f5f5;
-  scrollbar-base-color: #991b1b;
+  scrollbar-color: #b31818 #f5f5f5;
+  scrollbar-base-color: #9c0e0e;
 }

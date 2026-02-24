@@ -53,6 +53,15 @@ const TrackMenu = ({
           >
             Add to Playlist
           </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToPlaylist && onAddToPlaylist(track, index);
+            }}
+            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors border-t border-gray-200"
+          >
+            Go To Album
+          </button>
         </div>
       )}
 

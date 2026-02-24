@@ -194,8 +194,7 @@ const Controls = ({ className }) => {
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
     const onEnded = () => {
-      const nextTrackId = getNextTrackId();
-      dispatch(setId(nextTrackId));
+      handleSkipForward();
     };
 
     audio.addEventListener("play", onPlay);
@@ -212,8 +211,16 @@ const Controls = ({ className }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === "Space") {
-        e.preventDefault();        // prevents page scroll
-        handlePlayPause();
+        // Check if an input or textarea element is focused
+        const isFormElementFocused = document.activeElement && 
+          (document.activeElement.tagName === 'INPUT' || 
+           document.activeElement.tagName === 'TEXTAREA');
+        
+        // Only handle space as play/pause if no form element is focused
+        if (!isFormElementFocused) {
+          e.preventDefault();
+          handlePlayPause();
+        }
       }
     };
 
